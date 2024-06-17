@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stay Organized</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Stay Organized</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="todos.html">View ToDos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="new_todo.html">Add ToDo</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+            <h2>Add New To-Do</h2>
+            <form id="newTodoForm">
+                <div class="form-group">
+                    <label for="userSelect">Select User:</label>
+                    <select id="userSelect" class="form-control" required>
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="categorySelect">Select Category:</label>
+                    <select id="categorySelect" class="form-control" required>
+                        <option value="">Select Category</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="prioritySelect">Priority:</label>
+                    <select id="prioritySelect" class="form-control" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="deadline">Deadline:</label>
+                    <input type="date" id="deadline" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add To-Do</button>
+            </form>
+        </div>
+
+        <script>
+            // Wait for the content to load
+            document.addEventListener("DOMContentLoaded", () => {
+                // Get elements from HTML
+                const newTodoForm = document.getElementById("newTodoForm");
+                const userSelect = document.getElementById("userSelect");
+                const categorySelect = document.getElementById("categorySelect");
+                const prioritySelect = document.getElementById("prioritySelect");
+
+                // Function to populate dropdowns using innerHTML and for loops
+                const populateDropdown = (selectElement, data) => {
+                    selectElement.innerHTML = ""; // Clear existing options
+                    for (let item of data) { // Create an option for each item in the list
+                        const option = `<option value="${item.id}">${item.name}</option>`;
+                        selectElement.innerHTML += option; // Append each option
+                    }
+                };
+
+                // Fetch users and populate user select dropdown
+                fetch("http://localhost:8083/api/users")
+                    .then(response => response.json())
+                    .then(users => populateDropdown(userSelect, users)); // Populate userSelect dropdown with fetched data
+
+                // Fetch categories and populate category select dropdown
+                fetch("http://localhost:8083/api/categories")
+                    .then(response => response.json())
+                    .then(categories => populateDropdown(categorySelect, categories));// Populate categorySelect dropdown with fetched data
+
+                // Handle form submission when submitting form
+                newTodoForm.addEventListener("submit", (event) => {
+                    event.preventDefault(); // Prevent default form submission
+
+                    const todo = {
+                        user: userSelect.value, // Selected user
+                        category: categorySelect.value, // Selected category
+                        priority: prioritySelect.value, // Selected priority
+                        description: description.value, // Selected description
+                        deadline: deadline.value // Selected deadline
+                    };
+
+                    // Send POST request to API to add new To-Do
+                    fetch("http://localhost:8083/api/todos", {
+                        method: "POST", // POST request to create new To-Do
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(todo) // Convert todo to JSON
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("ToDo added successfully:", data);
+                            saveTodoLocally(data); // Save the todo locally after receiving ID from server
+                            newTodoForm.reset(); // Reset the form fields
+                        })
+                        .catch(error => console.error("Error adding To-Do:", error));
+                });
+
+                // Function to save todo locally to localStorage
+                function saveTodoLocally(todo) {
+                    let todos = JSON.parse(localStorage.getItem('todos')) || [];
+                    todos.push(todo); // Push the new todo object into the todos array
+                    localStorage.setItem('todos', JSON.stringify(todos)); // Store the updated todos array back into localStorage
+                    console.log('Todo saved locally:', todo);
+                }
+            });
+        </script>
+    </body>
+
+</html>
