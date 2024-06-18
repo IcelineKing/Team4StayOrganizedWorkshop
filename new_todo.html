@@ -2,47 +2,66 @@
 <html lang="en">
 
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Stay Organized</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/styles.css">
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Personal - Start Bootstrap Theme</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="images/PlanWhizLogo2.png" />
+        <!-- Custom Google font-->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap"
+            rel="stylesheet" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="CSS/styles.css" rel="stylesheet" />
     </head>
 
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">Stay Organized</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="todo.html">View ToDos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="new_todo.html">Add ToDo</a>
-                    </li>
-                </ul>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <img src="images/PlanWhizLogo2.png" alt="PlanWhiz Logo" height="170"
+                        class="d-inline-block align-text-top">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="new_todo.html">Add a New Todo</a></li>
+                        <li class="nav-item"><a class="nav-link" href="todo.html">View a Current Todo</a></li>
+                    </ul>
+                </div>
             </div>
         </nav>
+        <br>
         <div class="container">
-            <h2>Add New To-Do</h2>
+            <h1 class="display-3 fw-bolder mb-5"><span class="text-gradient d-inline">Add a new 'ToDo' task</h1>
+            <!--<h2>Add New To-Do</h2>-->
+            <div id="message" style="display: none;"></div> <!-- Message div for success message -->
             <form id="newTodoForm">
                 <div class="form-group">
-                    <label for="userSelect">Select User:</label>
+                    <label for="userSelect"><span class="text-gradient d-inline">Select User:</label>
                     <select id="userSelect" class="form-control" required>
                         <option value="">Select User</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="categorySelect">Select Category:</label>
+                    <label for="categorySelect"><span class="text-gradient d-inline">Select Category:</label>
                     <select id="categorySelect" class="form-control" required>
                         <option value="">Select Category</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="prioritySelect">Priority:</label>
+                    <label for="prioritySelect"><span class="text-gradient d-inline">Priority:</label>
                     <select id="prioritySelect" class="form-control" required>
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
@@ -50,83 +69,63 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="description">Description:</label>
+                    <label for="description"><span class="text-gradient d-inline">Description:</label>
                     <textarea id="description" class="form-control" rows="3" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="deadline">Deadline:</label>
+                    <label for="deadline"><span class="text-gradient d-inline">Deadline:</label>
                     <input type="date" id="deadline" class="form-control" required>
                 </div>
+                <br>
                 <button type="submit" class="btn btn-primary">Add To-Do</button>
             </form>
         </div>
-
-        <script>
-            // Wait for the content to load
-            document.addEventListener("DOMContentLoaded", () => {
-                // Get elements from HTML
-                const newTodoForm = document.getElementById("newTodoForm");
-                const userSelect = document.getElementById("userSelect");
-                const categorySelect = document.getElementById("categorySelect");
-                const prioritySelect = document.getElementById("prioritySelect");
-
-                // Function to populate dropdowns using innerHTML and for loops
-                const populateDropdown = (selectElement, data) => {
-                    selectElement.innerHTML = ""; // Clear existing options
-                    for (let item of data) { // Create an option for each item in the list
-                        const option = `<option value="${item.id}">${item.name}</option>`;
-                        selectElement.innerHTML += option; // Append each option
-                    }
-                };
-
-                // Fetch users and populate user select dropdown
-                fetch("http://localhost:8083/api/users")
-                    .then(response => response.json())
-                    .then(users => populateDropdown(userSelect, users)); // Populate userSelect dropdown with fetched data
-
-                // Fetch categories and populate category select dropdown
-                fetch("http://localhost:8083/api/categories")
-                    .then(response => response.json())
-                    .then(categories => populateDropdown(categorySelect, categories));// Populate categorySelect dropdown with fetched data
-
-                // Handle form submission when submitting form
-                newTodoForm.addEventListener("submit", (event) => {
-                    event.preventDefault(); // Prevent default form submission
-
-                    const todo = {
-                        user: userSelect.value, // Selected user
-                        category: categorySelect.value, // Selected category
-                        priority: prioritySelect.value, // Selected priority
-                        description: description.value, // Selected description
-                        deadline: deadline.value // Selected deadline
-                    };
-
-                    // Send POST request to API to add new To-Do
-                    fetch("http://localhost:8083/api/todos", {
-                        method: "POST", // POST request to create new To-Do
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(todo) // Convert todo to JSON
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log("ToDo added successfully:", data);
-                            saveTodoLocally(data); // Save the todo locally after receiving ID from server
-                            newTodoForm.reset(); // Reset the form fields
-                        })
-                        .catch(error => console.error("Error adding To-Do:", error));
-                });
-
-                // Function to save todo locally to localStorage
-                function saveTodoLocally(todo) {
-                    let todos = JSON.parse(localStorage.getItem('todos')) || [];
-                    todos.push(todo); // Push the new todo object into the todos array
-                    localStorage.setItem('todos', JSON.stringify(todos)); // Store the updated todos array back into localStorage
-                    console.log('Todo saved locally:', todo);
-                }
-            });
-        </script>
+        <br>
+        <!-- About Section-->
+        <section class="bg-light py-5">
+            <div class="container px-5">
+                <div class="row gx-5 justify-content-center">
+                    <div class="col-xxl-8">
+                        <div class="text-center my-5">
+                            <h2 class="display-5 fw-bolder"><span class="text-gradient d-inline">About Us</span>
+                            </h2>
+                            <p class="lead fw-light mb-4">PlanWhiz &copy;</p>
+                            <p class="text-muted">At PlanWhiz, we strive to make your life easier. With top-tier
+                                planning, we can transform your chaotic daily tasks into magically simplified
+                                accomplishments. Take any item in your daily routine; use our planner
+                                for easy viewing, satisfying completion, and consistent documentation.</p>
+                            <div class="d-flex justify-content-center fs-2 gap-4">
+                                <a class="text-gradient" href="www.x.com"><i class="bi bi-twitter"></i></a>
+                                <a class="text-gradient" href="www.linkedin.com"><i class="bi bi-linkedin"></i></a>
+                                <a class="text-gradient"
+                                    href="https://github.com/IcelineKing/Team4StayOrganizedWorkshop"><i
+                                        class="bi bi-github"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="bg-white py-4 mt-auto">
+            <div class="container px-5">
+                <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                    <div class="col-auto">
+                        <div class="small m-0">Copyright &copy; PlanWhiz by T4SO 2024</div>
+                    </div>
+                    <div class="col-auto">
+                        <a class="small" href="#!">Privacy</a>
+                        <span class="mx-1">&middot;</span>
+                        <a class="small" href="#!">Terms</a>
+                        <span class="mx-1">&middot;</span>
+                        <a class="small" href="#!">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="scripts/new_todo.js"></script>
     </body>
 
 </html>
