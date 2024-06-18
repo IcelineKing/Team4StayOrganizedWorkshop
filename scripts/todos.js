@@ -1,42 +1,64 @@
 "use strict";
 
-// http://localhost:8083/api/users
 const apiBaseUrl = "http://localhost:8083/api/users";
-
-// http://localhost:8083/api/todos to call the tasks
 const newBaseUrl = "http://localhost:8083/api/todos";
 
 window.onload = function () {
-  const getUsersButton = document.getElementById("getUsersButton");
-  const getUserDropdown = document.getElementById("userDropdown");
-
-  getUsersButton.onclick = onGetUsersButtonClick;
-};
-
-function userDropdown() {
+    const userDropdown = document.getElementById("userDropdown");
+    const todoList = document.getElementById("todoList");
 
 
-  const nameInput = document.getElementById("name");
-  const usernameOutPut = document.getElementById("username");
+    fetch(apiBaseUrl)
+        .then(response => response.json())
+        .then(users => {
+            users.forEach(user => {
+                const option = document.createElement("option");
+                option.value = user.id;
+                option.textContent = user.name;
+                userDropdown.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching users:', error));
 
-  let actualUrl = apiBaseUrl + nameInput.value;
+    // Fetch todos and populate table 
+    userDropdown.addEventListener("change", function() {
+        const userId = userDropdown.value;
+        if (!userId) {
+            return;
+        }
 
-  console.log("URL:" + actualUrl);
+        const url = `${newBaseUrl}/byuser/${userId}`;
 
-  fetch(actualUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
+        fetch(url)
+            .then(response => response.json())
+            .then(todos => {
+                todoList.innerHTML = "";
+                todos.forEach(todo => {
+                    const row = document.createElement("tr");
 
-      // "for in :" to retrive object keys --ex: name/id/tasks \ "for of :" to loop through an array
-      for (let d in data) {
-        let table = document.createElement("table");
-        table.innerHTML = data[d];
+                    const descriptionCell = document.createElement("td");
+                    descriptionCell.textContent = todo.description;
+                    row.appendChild(descriptionCell);
 
-        resultsOutPut.appendChild(table);
+                    const categoryCell = document.createElement("td");
+                    categoryCell.textContent = todo.category;
+                    row.appendChild(categoryCell);
 
-        // calling keys (name of variable) + the actual variable; the bracket calls values of the keys
-        console.log(d + ": " + data[d]);
-      }
+                    const deadlineCell = document.createElement("td");
+                    deadlineCell.textContent = todo.dueDate;
+                    row.appendChild(deadlineCell);
+
+                    const priorityCell = document.createElement("td");
+                    priorityCell.textContent = todo.priority;
+                    row.appendChild(priorityCell);
+
+                    const completedCell = document.createElement("td");
+                    completedCell.textContent = todo.completed ? "Yes" : "No";
+                    row.appendChild(completedCell);
+
+                    todoList.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching todos:', error));
     });
-}
+};
